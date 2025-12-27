@@ -1,0 +1,81 @@
+pseudocode
+
+## Notes
+
+# Invariants:
+- Scheduled queue is always ordered by target time
+- Scheduler does not make decisions (it schedules what it is asked to schedule)
+- Orders with retry >= 3 are never retried again
+- Scheduler never schedules in the past
+
+
+## Start ##
+Initialize:
+	time = 0
+	Orders queue (queue)
+	Scheduled queue (priority queue)
+	History database (hash map, array, linked list, etc.)
+	
+Scheduler (function):
+	1. Get current time
+	2. Set target time using action's incremental time
+	3. Add Order with Action and Target Time to Scheduled queue
+	## Scheduled queue maintains a list of actions associated with orders prioritized by their target times
+
+processPayment (function):
+	1. Return 80% true 20% false ## Simulation can fail payments at 20% chance
+	
+processFulfillment (function):
+	1. Return true ## Simulation always fulfills
+	
+processShipment (function):
+	1. Return true ## Simulation always ships
+
+Order Handler (Wait for order):
+	1. Create a new order
+	2. Mark status as Placed, update history database
+	3. Add order to Orders queue
+	4. Call scheduler (Order, Payment action, Payment time increment)
+	
+Action loop:
+	0. If Scheduled queue is empty:
+			Continue loop
+	1. Peek Scheduled queue for target time of next action
+	2. If time is on or after target time:
+			Pop the Scheduled queue into a local object curr_order
+		Else:
+			Set time to target time  ## Speeds up simulation
+			Continue loop
+			
+	3. If action is Payment:
+		If curr_order retry is 3 or greater:
+			Mark curr_order status as Failed
+			Update history database
+			Continue loop ## Order was popped out of the queue already, we'll rely on history db to show failed orders
+			
+		Else:
+			Call processPayment function
+			
+			If processPayment succeeds:
+				Mark status as Paid
+				Update history database
+			Else:
+				Mark status as Payment_Failed_Retryable
+				Increment Order retry counter
+				Call Scheduler (curr_order, Payment Action, Failure time increment)
+				Continue loop
+				
+			Call Scheduler (curr_order, Fulfillment action, Fulfillment time increment)
+			Continue loop
+	4. If action is Fulfillment:
+			Mark status as Fulfilled
+			Update history database
+			Call Scheduler (curr_order, Shipment action, Shipment time increment)
+			Continue loop
+	5. If action is Shipment:
+			Mark status as Shipped
+			Update history database
+		
+			
+
+	
