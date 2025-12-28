@@ -9,6 +9,47 @@ pseudocode
 - Order ID is set once by the order handler and is immutable after object creation
 - Scheduler never schedules in the past
 
+## Priority Queue Section ##
+# Note:  Language implementation needs to account for zero-based array index (pseudocode uses 1-based).  Probably by using [heapSize -1] where heapsize is used as index.
+Initialize:
+	heapArray: an array of tuples containing order and scheduledTime
+	heapSize: number of values in heapArray (initialized at zero and is incremented as elements are added to the heap array)
+
+minHeapify (function): ## parameters are an array (A), the heap size (s), and the index to check (i)
+	1. Establish index of parent, left, and right nodes:
+		parent: i/2 (integer)
+		left: 2i
+		right: 2i + 1
+	2. Select index of smallest scheduledTime out of A[i], A[left], A[right]
+	3. If i (check index) does not contain smallest:
+		Swap values of elements at indices i and smallest
+		Call maxHeapify on 'smallest' index (which is now broken)
+
+bubbleUp (function): ## parameters are heapArray, insertIndex
+	1. Establish index i = insertIndex and p = parent[insertIndex]
+	2. Select index of smallest scheduledTime between heapArray[i] and heapArray[p]
+	3. if value at i is smaller than value at p:
+		Swap values
+		Call bubbleUp with index p
+		
+insert (function) ## parameters are heapArray, heapSize, and the order tuple (order)
+	1. Increment heapSize
+	2. Place order tuple into heapArray[heapSize]
+	3. Call minHeapify using Parent(heapSize) as index
+
+minimum (function) ## parameter is heapArray and heapSize
+	1. Verify heapsize > 0
+	2. Return heapArray[1]
+
+extractMinimum (function) ## parameter is heapArray and heapSize
+	1. Verify heapSize > 0
+	2. Store heapArray[1] in temporary variable 'x'
+	3. Place heapArray[heapSize] in heapArray[1]
+	4. Decrement heapSize
+	5. Call minHeapify on index i=1
+	6. Return x
+
+
 
 ## Start ##
 Initialize:
