@@ -1,7 +1,18 @@
 
+OrderStatus // an enum of order statuses
+----------
+	PLACED, PAID, RETRYING, FAILED, FULFILLED, SHIPPED
+==========
+
+
+Actions // an enum of possible actions
+----------
+	PAYMENT, FULFILLMENT, SHIPMENT
+==========
+
 
 Order
-----
+----------
 - id
 - status
 - retryCount
@@ -11,6 +22,12 @@ Order
 + getRetryCount()
 + advanceStatus()
 + incrementRetryCount()
+============
+
+
+PQueue // A priority queue implementation that uses target scheduled time as key
+----------
+
 
 
 
