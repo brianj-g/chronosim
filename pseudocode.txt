@@ -6,6 +6,7 @@ pseudocode
 - Scheduled queue is always ordered by target time
 - Scheduler does not make decisions (it schedules what it is asked to schedule)
 - Orders with retry >= 3 are never retried again
+- Order ID is set once by the order handler and is immutable after object creation
 - Scheduler never schedules in the past
 
 
