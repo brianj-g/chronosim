@@ -1,5 +1,5 @@
 package chronosim;
 
-public enum Actions {
+public enum Action {
 	PAYMENT, FULFILLMENT, SHIPMENT
 }
