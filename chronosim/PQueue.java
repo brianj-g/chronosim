@@ -27,18 +27,19 @@ public class PQueue {
 		
 		
 		if (A[i].time != leftCheck) {
-			int minIndex = rightCheck;
 			queueObj tempOrder = A[i];
-			if (leftCheck != minIndex) {
+			if (leftCheck != rightCheck) {
 				A[i] = A[rightIndex];
 				A[rightIndex] = tempOrder;
+				minHeapify(A, h, rightIndex);
 			} else {
 				A[i] = A[leftIndex];
 				A[leftIndex] = tempOrder;
+				minHeapify(A, h, leftIndex);
 			}
-			
-			minHeapify(A, h, minIndex);
 		}
+		
+		return;
 	}
 	
 	
