@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 // Priority queue for scheduling orders
 public class PQueue {
-	private queueObj[] heapArray;
+	private queueObj[] heapArray = new queueObj[128]; //Initial array size 128
 	private int heapSize;
 	
 	public PQueue() {
@@ -19,7 +19,7 @@ public class PQueue {
 		return heapArray[0];
 	}
 	
-	public void minHeapify(queueObj[] A, int h, int i) {
+	private void minHeapify(queueObj[] A, int h, int i) {
 		//FIXME: This function uses 1-based index and needs to be converted
 		// int parentIndex = i/2; // For reference temp
 		int leftIndex = 2*i;
@@ -45,17 +45,45 @@ public class PQueue {
 		return;
 	}
 	
-	public void bubbleUp(queueObj[] A, int i) {
+	private void bubbleUp(queueObj[] A, int i) {
 		//FIXME: This function uses 1-based index and needs to be converted
-		int parentIndex = i / 2;
-		queueObj t;
-		if (A[i].scheduledTime >= A[parentIndex].scheduledTime) return;
+		int currentIndex = i;
+		int parentIndex;
+		if (currentIndex > 0) {
+			parentIndex = (currentIndex - 1) / 2;
+		} else {
+			System.out.println("Skipping index zero");
+			return;
+		}
+		System.out.println("Bubbling up index " + currentIndex + " with parent index " + parentIndex);
+		System.out.println("Current scheduled time: " + A[currentIndex].scheduledTime);
+		System.out.println("Parent scheduled time: " + A[parentIndex].scheduledTime);
 		
-		t = A[parentIndex];
-		A[parentIndex] = A[i];
-		A[i] = t;
+		if (A[currentIndex].scheduledTime >= A[parentIndex].scheduledTime) {
+			System.out.println("No more bubbling to do.");
+			return;
+		}
+		
+		queueObj t = A[parentIndex];
+		A[parentIndex] = A[currentIndex];
+		A[currentIndex] = t;
 		
 		bubbleUp(A, parentIndex);
+	}
+	
+	public void insert(int scheduledTime, Order o, Action action) {
+		heapSize++;
+		int insertIndex = heapSize - 1;
+		System.out.println("Heapsize: " + heapSize);
+		
+		//TODO: dynamic resizing.  For testing, it exits on overflow.
+		assert heapSize < heapArray.length;
+		
+		heapArray[insertIndex] = new queueObj(o, scheduledTime, action);
+		System.out.println("Item added at index " + (insertIndex));
+		
+		bubbleUp(heapArray, insertIndex);
+		
 	}
 	
 	
