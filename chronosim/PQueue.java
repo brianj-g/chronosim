@@ -12,33 +12,32 @@ public class PQueue {
 		this.heapSize = 0;
 	}
 	
-	public queueObj minimum() {
-		if (heapArray.length < 1) {
-			return null;
+	private void minHeapify(queueObj[] A, int i) {
+		//FIXME: Fix broken logic that produces inaccurate outcome
+		
+		int leftIndex = 2 * i + 1;
+		int rightIndex = 2 * i + 2;
+		
+		if (leftIndex >= heapSize) {
+			return;
 		}
-		return heapArray[0];
-	}
-	
-	private void minHeapify(queueObj[] A, int h, int i) {
-		//FIXME: This function uses 1-based index and needs to be converted
-		// int parentIndex = i/2; // For reference temp
-		int leftIndex = 2*i;
-		int rightIndex = 2*i + 1;
 		
-		int leftCheck = Integer.min(A[i].getTime(), A[leftIndex].getTime());
-		int rightCheck = Integer.min(leftCheck, A[rightIndex].getTime());
+		int currentTime = A[i].getTime();
+		int leftTime = A[leftIndex].getTime();
+		int rightTime = A[rightIndex].getTime();
+			
+		int min = Integer.min(Integer.min(leftTime, rightTime), currentTime);
 		
-		
-		if (A[i].scheduledTime != leftCheck) {
+		if (A[i].scheduledTime != min) {
 			queueObj tempOrder = A[i];
-			if (leftCheck != rightCheck) {
+			if (leftTime > rightTime) {
 				A[i] = A[rightIndex];
 				A[rightIndex] = tempOrder;
-				minHeapify(A, h, rightIndex);
-			} else {
+				minHeapify(A, rightIndex);
+			} else if (rightTime > leftTime) {
 				A[i] = A[leftIndex];
 				A[leftIndex] = tempOrder;
-				minHeapify(A, h, leftIndex);
+				minHeapify(A, leftIndex);
 			}
 		}
 		
@@ -46,21 +45,17 @@ public class PQueue {
 	}
 	
 	private void bubbleUp(queueObj[] A, int i) {
-		//FIXME: This function uses 1-based index and needs to be converted
 		int currentIndex = i;
 		int parentIndex;
 		if (currentIndex > 0) {
 			parentIndex = (currentIndex - 1) / 2;
 		} else {
-			System.out.println("Skipping index zero");
+			System.out.println("Order inserted at index " + currentIndex + " with scheduled time " + A[currentIndex].getTime());
 			return;
 		}
-		System.out.println("Bubbling up index " + currentIndex + " with parent index " + parentIndex);
-		System.out.println("Current scheduled time: " + A[currentIndex].scheduledTime);
-		System.out.println("Parent scheduled time: " + A[parentIndex].scheduledTime);
 		
 		if (A[currentIndex].scheduledTime >= A[parentIndex].scheduledTime) {
-			System.out.println("No more bubbling to do.");
+			System.out.println("Order inserted at index " + currentIndex + " with scheduled time " + A[currentIndex].getTime());
 			return;
 		}
 		
@@ -71,19 +66,46 @@ public class PQueue {
 		bubbleUp(A, parentIndex);
 	}
 	
+	public Order minimum() {
+		if (heapArray.length < 1) {
+			return null;
+		}
+		return heapArray[0].getOrder();
+	}
+	
+	public int nextScheduledTime() {
+		if (heapSize < 1) {
+			return -1;
+		}
+		
+		return heapArray[0].getTime();
+	}
+	
 	public void insert(int scheduledTime, Order o, Action action) {
 		heapSize++;
 		int insertIndex = heapSize - 1;
 		System.out.println("Heapsize: " + heapSize);
 		
 		//TODO: dynamic resizing.  For testing, it exits on overflow.
-		assert heapSize < heapArray.length;
+		assert heapSize < heapArray.length : "Queue size exceeds array length";
 		
 		heapArray[insertIndex] = new queueObj(o, scheduledTime, action);
-		System.out.println("Item added at index " + (insertIndex));
+		System.out.println("Item added with id " + o.getId());
 		
-		bubbleUp(heapArray, insertIndex);
+		bubbleUp(heapArray, insertIndex);	
+	}
+	
+	public Order extractMin() {
+		if (heapSize < 1) {
+			return null;
+		}
 		
+		queueObj t = heapArray[0];
+		heapArray[0] = heapArray[heapSize - 1];
+		heapSize -= 1;
+		minHeapify(heapArray, 0);
+		
+		return t.getOrder();
 	}
 	
 	
