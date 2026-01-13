@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 // Priority queue for scheduling orders
 public class PQueue {
-	private queueObj[] heapArray = new queueObj[128]; //Initial array size 128
+	private queueObj[] heapArray = new queueObj[1024]; //Initial array size 128
 	private int heapSize;
 	
 	public PQueue() {
@@ -13,8 +13,6 @@ public class PQueue {
 	}
 	
 	private void minHeapify(queueObj[] A, int i) {
-		//FIXME: Fix broken logic that produces inaccurate outcome
-		
 		int leftIndex = 2 * i + 1;
 		int rightIndex = 2 * i + 2;
 		
@@ -22,23 +20,19 @@ public class PQueue {
 			return;
 		}
 		
-		int currentTime = A[i].getTime();
-		int leftTime = A[leftIndex].getTime();
-		int rightTime = A[rightIndex].getTime();
-			
-		int min = Integer.min(Integer.min(leftTime, rightTime), currentTime);
+		int minIndex = i;
+		if (A[leftIndex].getTime() < A[minIndex].getTime()) {
+			minIndex = leftIndex;
+		}
+		if (rightIndex < heapSize && A[rightIndex].getTime() < A[minIndex].getTime()) {
+			minIndex = rightIndex;
+		}
 		
-		if (A[i].scheduledTime != min) {
+		if (minIndex != i) {
 			queueObj tempOrder = A[i];
-			if (leftTime > rightTime) {
-				A[i] = A[rightIndex];
-				A[rightIndex] = tempOrder;
-				minHeapify(A, rightIndex);
-			} else if (rightTime > leftTime) {
-				A[i] = A[leftIndex];
-				A[leftIndex] = tempOrder;
-				minHeapify(A, leftIndex);
-			}
+			A[i] = A[minIndex];
+			A[minIndex] = tempOrder;
+			minHeapify(A, minIndex);
 		}
 		
 		return;
@@ -101,8 +95,9 @@ public class PQueue {
 		}
 		
 		queueObj t = heapArray[0];
-		heapArray[0] = heapArray[heapSize - 1];
-		heapSize -= 1;
+		heapArray[0] = heapArray[heapSize -1];
+		heapSize--;
+		heapArray[heapSize] = null;
 		minHeapify(heapArray, 0);
 		
 		return t.getOrder();
